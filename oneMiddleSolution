@@ -1,0 +1,45 @@
+//https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves
+
+The question asks us to find out the LCA(Lowest Common Ancestors) of all those deepest leaves in a binary tree.
+To solve the problem, we choose to use post-order dfs.
+Now imagine that we has got the deepest depth of left-subtree and the right-subtree of the 'now' node,
+  if the deepest depth of left-subtree and right-subtree is equal to the max depth, 
+     we temporarily think that the 'now' node is their LCA.
+  and in other situations : if the left-subtree is the deepest and deeper than the right one, 
+                            the answer was updated when search the left-subtree. (use the quality of post-order.
+                            or if left-subtree and right-subtree is not the deepest, answer won't be the 'now' node. 
+Tips: When we write the code, should be careful with the leave node.
+
+class Solution {
+public:
+    int maxd;
+    TreeNode* ans;
+    TreeNode* lcaDeepestLeaves(TreeNode* root) {
+        maxd=-1;
+        ans=NULL;
+        maxdep(root,0);
+        return ans;
+    }
+    int maxdep(TreeNode* now,int dep){
+        if(now==NULL)return -1;
+        int nowdep=dep;
+        int ldep=maxdep(now->left,dep+1);
+        int rdep=maxdep(now->right,dep+1);
+		
+		// only if now is a leaf, we may come to here.
+        if(nowdep>max(ldep,rdep)){
+			// if a leaf is the lowest, choose it.
+            if(maxd<nowdep){
+                maxd=nowdep;
+                ans=now;
+            }
+        }
+        else{
+			// if left and right both have the deepest leaves, now is their lca.
+            if( ldep==rdep && ldep==maxd ){
+                ans=now;
+            }
+			// else ans must be in left or right sub-tree, and ans would be updated in dfs now's sons. 
+        }
+        return max(nowdep,max(ldep,rdep));
+    }
